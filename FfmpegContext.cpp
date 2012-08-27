@@ -51,7 +51,16 @@ extern "C" {
     int av_h264_decode_frame(struct AVCodecContext* avctx, int* nOutPOC, int64_t* rtStartTime, uint8_t* buf, int buf_size);
     int av_vc1_decode_frame(AVCodecContext* avctx, uint8_t* buf, int buf_size, int* nFrameSize);
     void av_init_packet(AVPacket* pkt);
+
+    // // Hack to use MinGW64 from 2.x branch
+    // void __mingw_raise_matherr(int typ, const char* name, double a1, double a2, double rslt) {}
 }
+
+// #if defined(STANDALONE_FILTER)
+// void* __imp_toupper = toupper;
+// void* __imp_time64 = _time64;
+// void* __imp_vscprintf = _vscprintf;
+// #endif
 
 const byte ZZ_SCAN[16]  = {
     0,  1,  4,  8,
