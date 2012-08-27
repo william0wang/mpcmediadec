@@ -1,5 +1,5 @@
 /*
- * $Id: VideoDecOutputPin.h 4336 2012-04-10 20:53:46Z XhmikosR $
+ * $Id: VideoDecOutputPin.h 5328 2012-07-01 10:16:48Z XhmikosR $
  *
  * (C) 2006-2012 see Authors.txt
  *
@@ -20,7 +20,6 @@
  *
  */
 
-
 #pragma once
 
 #include <videoacc.h>
@@ -32,27 +31,27 @@ class CVideoDecDXVAAllocator;
 
 
 class CVideoDecOutputPin : public CBaseVideoOutputPin
-	, public IAMVideoAcceleratorNotify
+    , public IAMVideoAcceleratorNotify
 {
 public:
-	CVideoDecOutputPin(TCHAR* pObjectName, CBaseVideoFilter* pFilter, HRESULT* phr, LPCWSTR pName);
+    CVideoDecOutputPin(TCHAR* pObjectName, CBaseVideoFilter* pFilter, HRESULT* phr, LPCWSTR pName);
 
-	~CVideoDecOutputPin();
+    ~CVideoDecOutputPin();
 
-	HRESULT			InitAllocator(IMemAllocator **ppAlloc);
+    HRESULT InitAllocator(IMemAllocator** ppAlloc);
 
-	DECLARE_IUNKNOWN
-	STDMETHODIMP	NonDelegatingQueryInterface(REFIID riid, void** ppv);
+    DECLARE_IUNKNOWN
+    STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void** ppv);
 
-	// IAMVideoAcceleratorNotify
-	STDMETHODIMP	GetUncompSurfacesInfo(const GUID *pGuid, LPAMVAUncompBufferInfo pUncompBufferInfo);
-	STDMETHODIMP	SetUncompSurfacesInfo(DWORD dwActualUncompSurfacesAllocated);
-	STDMETHODIMP	GetCreateVideoAcceleratorData(const GUID *pGuid, LPDWORD pdwSizeMiscData, LPVOID *ppMiscData);
+    // IAMVideoAcceleratorNotify
+    STDMETHODIMP GetUncompSurfacesInfo(const GUID* pGuid, LPAMVAUncompBufferInfo pUncompBufferInfo);
+    STDMETHODIMP SetUncompSurfacesInfo(DWORD dwActualUncompSurfacesAllocated);
+    STDMETHODIMP GetCreateVideoAcceleratorData(const GUID* pGuid, LPDWORD pdwSizeMiscData, LPVOID* ppMiscData);
 
 private :
-	CMPCVideoDecFilter*			m_pVideoDecFilter;
-	CVideoDecDXVAAllocator*		m_pDXVA2Allocator;
-	DWORD						m_dwDXVA1SurfaceCount;
-	GUID						m_GuidDecoderDXVA1;
-	DDPIXELFORMAT				m_ddUncompPixelFormat;
+    CMPCVideoDecFilter* m_pVideoDecFilter;
+    CVideoDecDXVAAllocator* m_pDXVA2Allocator;
+    DWORD m_dwDXVA1SurfaceCount;
+    GUID m_GuidDecoderDXVA1;
+    DDPIXELFORMAT m_ddUncompPixelFormat;
 };

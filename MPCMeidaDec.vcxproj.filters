@@ -15,6 +15,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ResourceCompile Include="MPCVideoDecFilter.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="CpuId.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -33,7 +38,10 @@
     <ClCompile Include="ffImgfmt.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FfmpegContext.c">
+    <ClCompile Include="FfmpegContext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="H264RandomAccess.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MPCFfmpegDec.cpp">
@@ -57,19 +65,13 @@
     <ClCompile Include="VideoDecOutputPin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\thirdparty\mfc\winmdi.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\thirdparty\mfc\afxctrlcontainer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\thirdparty\mfc\afxglobals.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\apps\mplayerc\WinAPIUtils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="H264RandomAccess.cpp">
+    <ClCompile Include="..\..\..\thirdparty\mfc\winmdi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MpaDecFilter.cpp">
@@ -80,6 +82,12 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="array_allocator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="char_t.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="CpuId.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -95,19 +103,25 @@
     <ClInclude Include="DXVADecoderVC1.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ffImgfmt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="FfmpegContext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IMPCVideoDecFilter.h">
+    <ClInclude Include="H264RandomAccess.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="intrin_fixed.h">
+    <ClInclude Include="IMPCVideoDecFilter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MPCVideoDecFilter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MPCVideoDecSettingsWnd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PODtypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
@@ -125,12 +139,6 @@
     <ClInclude Include="VideoDecOutputPin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\apps\mplayerc\WinAPIUtils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="H264RandomAccess.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="IMpaDecFilter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -140,10 +148,5 @@
     <ClInclude Include="MpaDecSettingsWnd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="MPCVideoDecFilter.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
   </ItemGroup>
 </Project>

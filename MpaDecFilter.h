@@ -1,5 +1,5 @@
 /*
- * $Id: MpaDecFilter.h 4330 2012-04-10 15:45:58Z XhmikosR $
+ * $Id: MpaDecFilter.h 5512 2012-07-17 02:44:27Z v0lt $
  *
  * (C) 2003-2006 Gabest
  * (C) 2006-2012 see Authors.txt
@@ -24,34 +24,55 @@
 #pragma once
 
 #include <atlcoll.h>
+// TODO: remove this when it's fixed in MSVC
+// Work around warning C4005: 'XXXX' : macro redefinition
+#pragma warning(push)
+#pragma warning(disable: 4005)
 #include <stdint.h>
-#include <a52dec/include/a52.h>
-#include <libdca/include/dts.h>
+#pragma warning(pop)
 #include "../../../DeCSS/DeCSSInputPin.h"
 #include "IMpaDecFilter.h"
 #include "MpaDecSettingsWnd.h"
-#include "../../../apps/mplayerc/InternalFiltersConfig.h"
+#include "../../../mpc-hc/InternalFiltersConfig.h"
 
-#define MPCAudioDecName	L"MPC Audio Decoder"
+#define MPCAudioDecName L"MPC Audio Decoder"
+
+enum {
+    SPK_ASIS = 0,
+    SPK_MONO,
+    SPK_STEREO,
+    SPK_3F,
+    SPK_2F1R,
+    SPK_3F1R,
+    SPK_2F2R,
+    SPK_3F2R,
+};
+#define SPK_MAX  SPK_3F2R
+#define SPK_MASK 0x0f
+#define SPK_LFE  0x10
 
 struct ps2_state_t {
-	bool sync;
-	double a[2], b[2];
-	ps2_state_t() {
-		reset();
-	}
-	void reset() {
-		sync = false;
-		a[0] = a[1] = b[0] = b[1] = 0;
-	}
+    bool sync;
+    double a[2], b[2];
+    ps2_state_t() {
+        reset();
+    }
+    void reset() {
+        sync = false;
+        a[0] = a[1] = b[0] = b[1] = 0;
+    }
 };
 
-#if defined(REGISTER_FILTER) | INTERNAL_DECODER_FLAC
-struct flac_state_t {
-	void*				pDecoder;
-	HRESULT				hr;
+struct DD_stats_t {
+protected:
+    int mode;
+    unsigned int ac3_frames;
+    unsigned int eac3_frames;
+
+public:
+    void Reset();
+    bool Desired(int type);
 };
-#endif
 
 struct AVCodec;
 struct AVCodecContext;
@@ -59,163 +80,135 @@ struct AVFrame;
 struct AVCodecParserContext;
 
 class __declspec(uuid("3D446B6F-71DE-4437-BE15-8CE47174340F"))
-	CMpaDecFilter
-	: public CTransformFilter
-	, public IMpaDecFilter
-	, public ISpecifyPropertyPages2
+    CMpaDecFilter
+    : public CTransformFilter
+    , public IMpaDecFilter
+    , public ISpecifyPropertyPages2
 {
 protected:
-	CCritSec m_csReceive;
+    CCritSec m_csReceive;
 
-#if defined(REGISTER_FILTER) | INTERNAL_DECODER_AC3
-	a52_state_t*			m_a52_state;
-#endif
-#if defined(REGISTER_FILTER) | INTERNAL_DECODER_DTS
-	dts_state_t*			m_dts_state;
-#endif
-	ps2_state_t				m_ps2_state;
-#if defined(REGISTER_FILTER) | INTERNAL_DECODER_FLAC
-	flac_state_t			m_flac;
-#endif
-	DolbyDigitalMode		m_DolbyDigitalMode;
+    ps2_state_t             m_ps2_state;
 
-#if defined(REGISTER_FILTER) | HAS_FFMPEG_AUDIO_DECODERS
-	// === FFMpeg variables
-	AVCodec*				m_pAVCodec;
-	AVCodecContext*			m_pAVCtx;
-	AVCodecParserContext*	m_pParser;
-	AVFrame*				m_pFrame;
+#if defined(STANDALONE_FILTER) || HAS_FFMPEG_AUDIO_DECODERS
+    // === FFMpeg variables
+    AVCodec*                m_pAVCodec;
+    AVCodecContext*         m_pAVCtx;
+    AVCodecParserContext*   m_pParser;
+    AVFrame*                m_pFrame;
 #endif
 
-	CAtlArray<BYTE> m_buff;
-	REFERENCE_TIME m_rtStart;
-	bool m_fDiscontinuity;
+    CAtlArray<BYTE> m_buff;
+    REFERENCE_TIME m_rtStart;
+    bool m_fDiscontinuity;
 
-	float m_sample_max;
-
-#if defined(REGISTER_FILTER) | INTERNAL_DECODER_LPCM
-	HRESULT ProcessLPCM();
-	HRESULT ProcessHdmvLPCM(bool bAlignOldBuffer);
+#if defined(STANDALONE_FILTER) || INTERNAL_DECODER_LPCM
+    HRESULT ProcessLPCM();
+    HRESULT ProcessHdmvLPCM(bool bAlignOldBuffer);
 #endif
-#if defined(REGISTER_FILTER) | INTERNAL_DECODER_AC3
-	HRESULT ProcessAC3();
-	HRESULT ProcessA52(BYTE* p, int buffsize, int& size, bool& fEnoughData);
+#if defined(STANDALONE_FILTER) || INTERNAL_DECODER_AC3
+    HRESULT ProcessAC3();
+    HRESULT ProcessAC3_SPDIF();
 #endif
-#if defined(REGISTER_FILTER) | INTERNAL_DECODER_DTS
-	HRESULT ProcessDTS();
+#if defined(STANDALONE_FILTER) || INTERNAL_DECODER_DTS
+    HRESULT ProcessDTS_SPDIF();
 #endif
-#if defined(REGISTER_FILTER) | INTERNAL_DECODER_PS2AUDIO
-	HRESULT ProcessPS2PCM();
-	HRESULT ProcessPS2ADPCM();
+#if defined(STANDALONE_FILTER) || INTERNAL_DECODER_PS2AUDIO
+    HRESULT ProcessPS2PCM();
+    HRESULT ProcessPS2ADPCM();
 #endif
-#if defined(REGISTER_FILTER) | INTERNAL_DECODER_FLAC
-	HRESULT ProcessFlac();
-#endif
-#if defined(REGISTER_FILTER) | INTERNAL_DECODER_PCM
-	HRESULT ProcessPCMraw();
-	HRESULT ProcessPCMintBE();
-	HRESULT ProcessPCMintLE();
-	HRESULT ProcessPCMfloatBE();
-	HRESULT ProcessPCMfloatLE();
+#if defined(STANDALONE_FILTER) || INTERNAL_DECODER_PCM
+    HRESULT ProcessPCMraw();
+    HRESULT ProcessPCMintBE();
+    HRESULT ProcessPCMintLE();
+    HRESULT ProcessPCMfloatBE();
+    HRESULT ProcessPCMfloatLE();
 #endif
 
-	HRESULT GetDeliveryBuffer(IMediaSample** pSample, BYTE** pData);
-	HRESULT Deliver(CAtlArray<float>& pBuff, DWORD nSamplesPerSec, WORD nChannels, DWORD dwChannelMask = 0);
-	HRESULT DeliverBitstream(BYTE* pBuff, int size, int sample_rate, int frame_length, BYTE type);
-	HRESULT ReconnectOutput(int nSamples, CMediaType& mt);
-	CMediaType CreateMediaType(MPCSampleFormat sf, DWORD nSamplesPerSec, WORD nChannels, DWORD dwChannelMask = 0);
-	CMediaType CreateMediaTypeSPDIF(DWORD nSamplesPerSec = 48000);
+    HRESULT GetDeliveryBuffer(IMediaSample** pSample, BYTE** pData);
+    HRESULT Deliver(CAtlArray<float>& pBuff, DWORD nSamplesPerSec, WORD nChannels, DWORD dwChannelMask = 0);
+    HRESULT DeliverBitstream(BYTE* pBuff, int size, int sample_rate, int frame_length, BYTE type);
+    HRESULT ReconnectOutput(int nSamples, CMediaType& mt);
+    CMediaType CreateMediaType(MPCSampleFormat sf, DWORD nSamplesPerSec, WORD nChannels, DWORD dwChannelMask = 0);
+    CMediaType CreateMediaTypeSPDIF(DWORD nSamplesPerSec = 48000);
 
-#if defined(REGISTER_FILTER) | INTERNAL_DECODER_FLAC
-	void	FlacInitDecoder();
-	void	flac_stream_finish();
-#endif
+#if defined(STANDALONE_FILTER) || HAS_FFMPEG_AUDIO_DECODERS
+    bool    InitFFmpeg(enum CodecID nCodecId);
+    void    ffmpeg_stream_finish();
+    HRESULT DeliverFFmpeg(enum CodecID nCodecId, BYTE* p, int samples, int& size);
+    HRESULT ProcessFFmpeg(enum CodecID nCodecId);
+    static void LogLibavcodec(void* par, int level, const char* fmt, va_list valist);
 
-#if defined(REGISTER_FILTER) | HAS_FFMPEG_AUDIO_DECODERS
-	bool	InitFFmpeg(enum CodecID nCodecId);
-	void	ffmpeg_stream_finish();
-	HRESULT DeliverFFmpeg(enum CodecID nCodecId, BYTE* p, int samples, int& size);
-	HRESULT ProcessFFmpeg(enum CodecID nCodecId);
-	static void	LogLibAVCodec(void* par,int level,const char *fmt,va_list valist);
+    BYTE*   m_pFFBuffer;
+    int     m_nFFBufferSize;
 
-	BYTE*	m_pFFBuffer;
-	int		m_nFFBufferSize;
+    enum CodecID FindCodec(const GUID subtype);
 
-	enum CodecID	FindCodec(const GUID subtype);
+    struct {
+        int flavor;
+        int coded_frame_size;
+        int sub_packet_h;
+        int sub_packet_size;
+        unsigned int deint_id;
+    } m_raData;
 
-	struct {
-		int flavor;
-		int coded_frame_size;
-		int sub_packet_h;
-		int sub_packet_size;
-		unsigned int deint_id;
-	} m_raData;
-
-	HRESULT	ParseRealAudioHeader(const BYTE *extra, const int extralen);
+    HRESULT ParseRealAudioHeader(const BYTE* extra, const int extralen);
 #endif
 
 protected:
-	CCritSec m_csProps;
-	MPCSampleFormat m_iSampleFormat;
-	bool m_fNormalize;
-	int m_iSpeakerConfig[etlast];
-	bool m_fDynamicRangeControl[etlast];
-	float m_boost;
+    CCritSec m_csProps;
+    MPCSampleFormat m_iSampleFormat;
+    int  m_iSpeakerConfig[etlast];
+    bool m_fDRC[etlast];
+    bool m_fSPDIF[etlast];
 
-	bool m_bResync;
+    bool m_bResync;
+    DD_stats_t m_DDstats;
 
 public:
-	CMpaDecFilter(LPUNKNOWN lpunk, HRESULT* phr);
-	virtual ~CMpaDecFilter();
+    CMpaDecFilter(LPUNKNOWN lpunk, HRESULT* phr);
+    virtual ~CMpaDecFilter();
 
-	DECLARE_IUNKNOWN
-	STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void** ppv);
+    DECLARE_IUNKNOWN
+    STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void** ppv);
 
-	HRESULT EndOfStream();
-	HRESULT BeginFlush();
-	HRESULT EndFlush();
-	HRESULT NewSegment(REFERENCE_TIME tStart, REFERENCE_TIME tStop, double dRate);
-	HRESULT Receive(IMediaSample* pIn);
+    HRESULT EndOfStream();
+    HRESULT BeginFlush();
+    HRESULT EndFlush();
+    HRESULT NewSegment(REFERENCE_TIME tStart, REFERENCE_TIME tStop, double dRate);
+    HRESULT Receive(IMediaSample* pIn);
 
-	HRESULT CheckInputType(const CMediaType* mtIn);
-	HRESULT CheckTransform(const CMediaType* mtIn, const CMediaType* mtOut);
-	HRESULT DecideBufferSize(IMemAllocator* pAllocator, ALLOCATOR_PROPERTIES* pProperties);
-	HRESULT GetMediaType(int iPosition, CMediaType* pMediaType);
+    HRESULT CheckInputType(const CMediaType* mtIn);
+    HRESULT CheckTransform(const CMediaType* mtIn, const CMediaType* mtOut);
+    HRESULT DecideBufferSize(IMemAllocator* pAllocator, ALLOCATOR_PROPERTIES* pProperties);
+    HRESULT GetMediaType(int iPosition, CMediaType* pMediaType);
 
-	HRESULT StartStreaming();
-	HRESULT StopStreaming();
+    HRESULT StartStreaming();
+    HRESULT StopStreaming();
 
-	HRESULT	SetMediaType(PIN_DIRECTION dir, const CMediaType *pmt);
+    HRESULT SetMediaType(PIN_DIRECTION dir, const CMediaType* pmt);
 
-	// ISpecifyPropertyPages2
+    // ISpecifyPropertyPages2
 
-	STDMETHODIMP GetPages(CAUUID* pPages);
-	STDMETHODIMP CreatePage(const GUID& guid, IPropertyPage** ppPage);
+    STDMETHODIMP GetPages(CAUUID* pPages);
+    STDMETHODIMP CreatePage(const GUID& guid, IPropertyPage** ppPage);
 
-	// IMpaDecFilter
+    // IMpaDecFilter
 
-	STDMETHODIMP SetSampleFormat(MPCSampleFormat sf);
-	STDMETHODIMP_(MPCSampleFormat) GetSampleFormat();
-	STDMETHODIMP SetNormalize(bool fNormalize);
-	STDMETHODIMP_(bool) GetNormalize();
-	STDMETHODIMP SetSpeakerConfig(enctype et, int sc);
-	STDMETHODIMP_(int) GetSpeakerConfig(enctype et);
-	STDMETHODIMP SetDynamicRangeControl(enctype et, bool fDRC);
-	STDMETHODIMP_(bool) GetDynamicRangeControl(enctype et);
-	STDMETHODIMP SetBoost(float boost);
-	STDMETHODIMP_(float) GetBoost();
-	STDMETHODIMP_(DolbyDigitalMode) GetDolbyDigitalMode();
+    STDMETHODIMP SetSampleFormat(MPCSampleFormat sf);
+    STDMETHODIMP_(MPCSampleFormat) GetSampleFormat();
+    STDMETHODIMP SetSpeakerConfig(enctype et, int sc);
+    STDMETHODIMP_(int) GetSpeakerConfig(enctype et);
+    STDMETHODIMP SetDynamicRangeControl(enctype et, bool fDRC);
+    STDMETHODIMP_(bool) GetDynamicRangeControl(enctype et);
+    STDMETHODIMP SetSPDIF(enctype et, bool fSPDIF);
+    STDMETHODIMP_(bool) GetSPDIF(enctype et);
 
-	STDMETHODIMP SaveSettings();
-
-#if defined(REGISTER_FILTER) | INTERNAL_DECODER_FLAC
-	void	FlacFillBuffer(BYTE buffer[], size_t *bytes);
-	void	FlacDeliverBuffer (unsigned blocksize, const __int32 * const buffer[]);
-#endif
+    STDMETHODIMP SaveSettings();
 };
 
 class CMpaDecInputPin : public CDeCSSInputPin
 {
 public:
-	CMpaDecInputPin(CTransformFilter* pFilter, HRESULT* phr, LPWSTR pName);
+    CMpaDecInputPin(CTransformFilter* pFilter, HRESULT* phr, LPWSTR pName);
 };

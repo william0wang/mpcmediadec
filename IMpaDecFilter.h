@@ -1,5 +1,5 @@
 /*
- * $Id: IMpaDecFilter.h 4330 2012-04-10 15:45:58Z XhmikosR $
+ * $Id: IMpaDecFilter.h 5336 2012-07-01 21:49:29Z v0lt $
  *
  * (C) 2003-2006 Gabest
  * (C) 2006-2012 see Authors.txt
@@ -25,31 +25,19 @@
 
 enum MPCSampleFormat {SF_PCM16, SF_PCM24, SF_PCM32, SF_FLOAT32};
 
-enum DolbyDigitalMode {
-	DD_Unknown,
-	DD_AC3,			// Standard AC3
-	DD_EAC3,		// Dolby Digital +
-	DD_TRUEHD,		// Dolby True HD
-	DD_MLP			// Meridian Lossless Packing
-};
-
-
 interface __declspec(uuid("2067C60F-752F-4EBD-B0B1-4CBC5E00741C"))
 IMpaDecFilter :
 public IUnknown {
-	enum enctype {ac3, dts, etlast};
+    enum enctype { ac3, dts, etlast };
 
-	STDMETHOD(SetSampleFormat(MPCSampleFormat sf)) = 0;
-	STDMETHOD_(MPCSampleFormat, GetSampleFormat()) = 0;
-	STDMETHOD(SetNormalize(bool fNormalize)) = 0;
-	STDMETHOD_(bool, GetNormalize()) = 0;
-	STDMETHOD(SetSpeakerConfig(enctype et, int sc)) = 0; // sign of sc tells if spdif is active
-	STDMETHOD_(int, GetSpeakerConfig(enctype et)) = 0;
-	STDMETHOD(SetDynamicRangeControl(enctype et, bool fDRC)) = 0;
-	STDMETHOD_(bool, GetDynamicRangeControl(enctype et)) = 0;
-	STDMETHOD(SetBoost(float boost)) = 0;
-	STDMETHOD_(float, GetBoost()) = 0;
-	STDMETHOD_(DolbyDigitalMode, GetDolbyDigitalMode()) = 0;
+    STDMETHOD(SetSampleFormat(MPCSampleFormat sf)) = 0;
+    STDMETHOD_(MPCSampleFormat, GetSampleFormat()) = 0;
+    STDMETHOD(SetSpeakerConfig(enctype et, int sc)) = 0; // sign of sc tells if spdif is active
+    STDMETHOD_(int, GetSpeakerConfig(enctype et)) = 0;
+    STDMETHOD(SetDynamicRangeControl(enctype et, bool fDRC)) = 0;
+    STDMETHOD_(bool, GetDynamicRangeControl(enctype et)) = 0;
+    STDMETHOD(SetSPDIF(enctype et, bool fSPDIF)) = 0;
+    STDMETHOD_(bool, GetSPDIF(enctype et)) = 0;
 
-	STDMETHOD(SaveSettings()) = 0;
+    STDMETHOD(SaveSettings()) = 0;
 };

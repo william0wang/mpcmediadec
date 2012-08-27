@@ -1,5 +1,5 @@
 /*
- * $Id: stdafx.h 4336 2012-04-10 20:53:46Z XhmikosR $
+ * $Id: stdafx.h 5352 2012-07-03 20:35:03Z XhmikosR $
  *
  * (C) 2007-2012 see Authors.txt
  *
@@ -29,15 +29,10 @@
 
 #include <d3dx9.h>
 #include <evr.h>
-#include <mfapi.h>
-#include <Mferror.h>
 #include <atlcoll.h>
-#include <vector>
 
 #if defined(_DEBUG) && defined(DXVA_LOGFILE_B)
 void LOG(LPCTSTR fmt, ...);
 #else
 inline void LOG(LPCTSTR fmt, ...) {}
 #endif
-
-#define CHECK_HR(x) hr = ##x; if (FAILED (hr)) { TRACE("Error : 0x%08x\n", hr); ASSERT (hr==VFW_E_NOT_COMMITTED); return hr; }

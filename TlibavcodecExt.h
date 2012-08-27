@@ -1,5 +1,5 @@
 /*
- * $Id: TlibavcodecExt.h 4336 2012-04-10 20:53:46Z XhmikosR $
+ * $Id: TlibavcodecExt.h 5328 2012-07-01 10:16:48Z XhmikosR $
  *
  * (C) 2006-2012 see Authors.txt
  *
@@ -20,36 +20,30 @@
  *
  */
 
-
 #pragma once
-
-#ifndef uint8_t
-typedef unsigned char uint8_t;
-#endif
-
 
 struct AVCodecContext;
 struct AVFrame;
 
-typedef int				(*FUNC_AV_DEFAULT_GET_BUFFER)(AVCodecContext *s, AVFrame *pic);
-typedef void			(*FUNC_AV_DEFAULT_RELEASE_BUFFER)(AVCodecContext *s, AVFrame *pic);
-typedef int				(*FUNC_AV_DEFAULT_REGET_BUFFER)(AVCodecContext *s, AVFrame *pic);
+typedef int (*FUNC_AV_DEFAULT_GET_BUFFER)(AVCodecContext* s, AVFrame* pic);
+typedef void (*FUNC_AV_DEFAULT_RELEASE_BUFFER)(AVCodecContext* s, AVFrame* pic);
+typedef int (*FUNC_AV_DEFAULT_REGET_BUFFER)(AVCodecContext* s, AVFrame* pic);
 
 
 struct TlibavcodecExt {
 protected:
-	static int get_buffer(AVCodecContext *s, AVFrame *pic);
-	static void release_buffer(AVCodecContext *s, AVFrame *pic);
-	static int reget_buffer(AVCodecContext *s, AVFrame *pic);
+    static int get_buffer(AVCodecContext* s, AVFrame* pic);
+    static void release_buffer(AVCodecContext* s, AVFrame* pic);
+    static int reget_buffer(AVCodecContext* s, AVFrame* pic);
 
-	FUNC_AV_DEFAULT_GET_BUFFER				ff_avcodec_default_get_buffer;
-	FUNC_AV_DEFAULT_RELEASE_BUFFER			ff_avcodec_default_release_buffer;
-	FUNC_AV_DEFAULT_REGET_BUFFER			ff_avcodec_default_reget_buffer;
+    FUNC_AV_DEFAULT_GET_BUFFER     ff_avcodec_default_get_buffer;
+    FUNC_AV_DEFAULT_RELEASE_BUFFER ff_avcodec_default_release_buffer;
+    FUNC_AV_DEFAULT_REGET_BUFFER   ff_avcodec_default_reget_buffer;
 
 public:
-	virtual ~TlibavcodecExt() {}
-	void			ConnectTo(AVCodecContext *pAVCtx);
-	virtual void	OnGetBuffer(AVFrame *pic) {}
-	virtual void	OnRegetBuffer(AVFrame *pic) {}
-	virtual void	OnReleaseBuffer(AVFrame *pic) {}
+    virtual ~TlibavcodecExt() {}
+    void ConnectTo(AVCodecContext* pAVCtx);
+    virtual void OnGetBuffer(AVFrame* pic) {}
+    virtual void OnRegetBuffer(AVFrame* pic) {}
+    virtual void OnReleaseBuffer(AVFrame* pic) {}
 };

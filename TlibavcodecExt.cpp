@@ -1,5 +1,5 @@
 /*
- * $Id: TlibavcodecExt.cpp 4336 2012-04-10 20:53:46Z XhmikosR $
+ * $Id: TlibavcodecExt.cpp 5328 2012-07-01 10:16:48Z XhmikosR $
  *
  * (C) 2006-2012 see Authors.txt
  *
@@ -22,40 +22,37 @@
 
 
 #include "stdafx.h"
-
-#include "PODtypes.h"
-#include "avcodec.h"
-
+#include "ffmpeg/libavcodec/avcodec.h"
 #include "TlibavcodecExt.h"
 
-void TlibavcodecExt::ConnectTo(AVCodecContext *pAVCtx)
+void TlibavcodecExt::ConnectTo(AVCodecContext* pAVCtx)
 {
-	pAVCtx->opaque					= this;
-	pAVCtx->get_buffer				= get_buffer;
-	pAVCtx->reget_buffer			= reget_buffer;
-	pAVCtx->release_buffer			= release_buffer;
+    pAVCtx->opaque = this;
+    pAVCtx->get_buffer = get_buffer;
+    pAVCtx->reget_buffer = reget_buffer;
+    pAVCtx->release_buffer = release_buffer;
 }
 
-int TlibavcodecExt::get_buffer(AVCodecContext *c, AVFrame *pic)
+int TlibavcodecExt::get_buffer(AVCodecContext* c, AVFrame* pic)
 {
-	int ret=c->opaque->ff_avcodec_default_get_buffer(c,pic);
-	if (ret==0) {
-		c->opaque->OnGetBuffer(pic);
-	}
-	return ret;
+    int ret = c->opaque->ff_avcodec_default_get_buffer(c, pic);
+    if (ret == 0) {
+        c->opaque->OnGetBuffer(pic);
+    }
+    return ret;
 }
 
-int TlibavcodecExt::reget_buffer(AVCodecContext *c, AVFrame *pic)
+int TlibavcodecExt::reget_buffer(AVCodecContext* c, AVFrame* pic)
 {
-	int ret=c->opaque->ff_avcodec_default_reget_buffer(c,pic);
-	if (ret==0) {
-		c->opaque->OnRegetBuffer(pic);
-	}
-	return ret;
+    int ret = c->opaque->ff_avcodec_default_reget_buffer(c, pic);
+    if (ret == 0) {
+        c->opaque->OnRegetBuffer(pic);
+    }
+    return ret;
 }
 
-void TlibavcodecExt::release_buffer(AVCodecContext *c, AVFrame *pic)
+void TlibavcodecExt::release_buffer(AVCodecContext* c, AVFrame* pic)
 {
-	c->opaque->ff_avcodec_default_release_buffer(c,pic);
-	c->opaque->OnReleaseBuffer(pic);
+    c->opaque->ff_avcodec_default_release_buffer(c, pic);
+    c->opaque->OnReleaseBuffer(pic);
 }

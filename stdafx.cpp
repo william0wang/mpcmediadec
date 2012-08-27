@@ -1,5 +1,5 @@
 /*
- * $Id: stdafx.cpp 4336 2012-04-10 20:53:46Z XhmikosR $
+ * $Id: stdafx.cpp 5110 2012-06-13 09:05:30Z XhmikosR $
  *
  * (C) 2006-2012 see Authors.txt
  *
@@ -23,24 +23,26 @@
 
 #include "stdafx.h"
 
+//#define DXVA_LOGFILE_B
+
 #if defined(_DEBUG) && defined(DXVA_LOGFILE_B)
 
-#define LOG_FILE				_T("dxva.log")
+#define LOG_FILE _T("dxva.log")
 
 void LOG(LPCTSTR fmt, ...)
 {
-	va_list args;
-	va_start(args, fmt);
-	if (TCHAR* buff = new TCHAR[_vsctprintf(fmt, args) + 1]) {
-		_vstprintf(buff, fmt, args);
-		if (FILE* f = _tfopen(LOG_FILE, _T("at"))) {
-			fseek(f, 0, 2);
-			_ftprintf(f, _T("%s\n"), buff);
-			fclose(f);
-		}
-		delete [] buff;
-	}
-	va_end(args);
+    va_list args;
+    va_start(args, fmt);
+    if (TCHAR* buff = DNew TCHAR[_vsctprintf(fmt, args) + 1]) {
+        _vstprintf(buff, fmt, args);
+        if (FILE* f = _tfopen(LOG_FILE, _T("at"))) {
+            fseek(f, 0, 2);
+            _ftprintf_s(f, _T("%s\n"), buff);
+            fclose(f);
+        }
+        delete [] buff;
+    }
+    va_end(args);
 }
 
 #endif
